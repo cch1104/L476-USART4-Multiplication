@@ -41,7 +41,7 @@ USART2:
 
 | Setting    | Value |
 |------------|-------|
-| Baud Rate  | 115200 |
+| Baud Rate  | 9600 |
 | Data Bits  | 8 |
 | Stop Bits  | 1 |
 | Parity     | None |
