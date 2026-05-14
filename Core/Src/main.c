@@ -21,7 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "string.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,7 +58,20 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int ReadInt(){
+	int i,N;
+	char Rx[2];
 
+	N=0;
+	while(1){
+		HAL_UART_Receive(&huart2, (uint8_t*) Rx, 1, HAL_MAX_DELAY);
+		HAL_UART_Transmit(&huart2, (uint8_t*) Rx, 1, HAL_MAX_DELAY);
+		if(Rx[0]== '\r') break;
+		i=atoi(Rx);
+		N=10*N+i;
+	}
+	return N;
+}
 /* USER CODE END 0 */
 
 /**
@@ -95,8 +110,29 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  int r1, r2, N;
+  char Buff[30];
   while (1)
   {
+	  sprintf(Buff, "\r\n ***** Learning Multiplication **** \n\r");
+	  HAL_UART_Transmit(&huart2, (uint8_t*)Buff, strlen(Buff), HAL_MAX_DELAY);
+
+	  r1= rand() %100;
+	  r2= rand() %100;
+	  sprintf(Buff, "%i * %i = ?",r1, r2);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)Buff, strlen(Buff), HAL_MAX_DELAY);
+
+	  N=ReadInt();//read integer from keyboard vis UART
+	  HAL_UART_Transmit(&huart2, (uint8_t*)"\n\r", 2, HAL_MAX_DELAY);
+	  if(N == r1*r2){
+		  sprintf(Buff, "Well Done \n\r");
+		  HAL_UART_Transmit(&huart2, (uint8_t*)Buff, strlen(Buff), HAL_MAX_DELAY);
+	  }else{
+		  sprintf(Buff, "Wrong!... Correct answer= %i \n\r", r1*r2);
+		  HAL_UART_Transmit(&huart2, (uint8_t*)Buff, strlen(Buff), HAL_MAX_DELAY);
+	  }
+
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
